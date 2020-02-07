@@ -38,16 +38,17 @@ class Provider(BaseProvider):
     # private
 
     def __storage_client(self) -> storage.blob:
-        try:
-            return storage.Client().get_bucket(self.bucket)
-        except exceptions.GoogleCloudError as e:
-            raise ValueError(e.message)
+        return storage.Client().get_bucket(self.bucket)
 
     def __blob_object(self, remote_file_path) -> storage.blob.Blob:
-        storage = self.__storage_client()
-        blob = storage.blob(remote_file_path)
+        try:
+            storage_client = self.__storage_client()
+            blob = storage_client.blob(remote_file_path)
 
-        return blob
+            return blob
+        except exceptions.NotFound as e:
+            # TODO: raise our own error message here
+            raise ValueError(e.message)
 
     def __upload(self, remote_file_path, local_file_path) -> storage.blob.Blob:
         blob = self.__blob_object(remote_file_path)
@@ -59,6 +60,7 @@ class Provider(BaseProvider):
         blob = self.__blob_object(remote_file_path)
 
         if not blob.exists():
+            # TODO: raise our own error message here
             raise ValueError
 
         blob.delete()

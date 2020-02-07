@@ -52,11 +52,11 @@ Set and get bucket
 Upload
 
 ```sh
->>> service.request_upload("ex/file.txt", "file.txt")
+>>> service.request_upload("remote_path/file.txt", "local_path/file.txt")
 ```
 
 Delete
 
 ```sh
->>> service.request_upload("ex/file.txt")
+>>> service.request_delete("remote_path/file.txt")
 ```
