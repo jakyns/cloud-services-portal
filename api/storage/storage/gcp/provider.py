@@ -4,6 +4,8 @@ from google.cloud import exceptions
 from api.storage.storage.base.provider import Provider as BaseProvider
 from api.storage.storage.gcp.response import Response as GCPResponse
 
+from lib.storage import errors as StorageError
+
 
 class Provider(BaseProvider):
     PROVIDER = "GCP"
@@ -47,8 +49,7 @@ class Provider(BaseProvider):
 
             return blob
         except exceptions.NotFound as e:
-            # TODO: raise our own error message here
-            raise ValueError(e.message)
+            raise StorageError.BucketNotFound
 
     def __upload(self, remote_file_path, local_file_path) -> storage.blob.Blob:
         blob = self.__blob_object(remote_file_path)
@@ -60,8 +61,7 @@ class Provider(BaseProvider):
         blob = self.__blob_object(remote_file_path)
 
         if not blob.exists():
-            # TODO: raise our own error message here
-            raise ValueError
+            raise StorageError.FileNotFound
 
         blob.delete()
 

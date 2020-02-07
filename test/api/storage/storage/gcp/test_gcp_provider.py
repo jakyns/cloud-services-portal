@@ -6,6 +6,8 @@ from google.cloud import exceptions
 from api.storage.storage.gcp.provider import Provider as GCPProvider
 from api.storage.storage.gcp.response import Response as GCPResponse
 
+from lib.storage import errors as StorageError
+
 
 class TestGCPProvider(unittest.TestCase):
     def setUp(self):
@@ -20,8 +22,7 @@ class TestGCPProvider(unittest.TestCase):
     def test_that_raises_error_when_it_can_not_find_bucket(self, mock_storage_client):
         mock_storage_client.side_effect = exceptions.NotFound("")
 
-        # TODO: raise our own message instead of TypeError
-        with self.assertRaises(ValueError):
+        with self.assertRaises(StorageError.BucketNotFound):
             self.provider.set_bucket(self.bucket)
             self.provider.request_upload(self.remote_file_path, self.local_file_path)
 
@@ -53,7 +54,7 @@ class TestGCPProvider(unittest.TestCase):
     ):
         mock_blob.return_value = self.__mock_deleting_file_object()
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(StorageError.FileNotFound):
             self.provider.set_bucket(self.bucket)
             self.provider.request_delete(self.remote_file_path)
 
