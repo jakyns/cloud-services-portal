@@ -1,6 +1,8 @@
 import unittest
 import mock
 
+from google.cloud import exceptions
+
 from api.storage.storage.gcp.provider import Provider as GCPProvider
 from api.storage.storage.gcp.response import Response as GCPResponse
 
@@ -15,14 +17,15 @@ class TestGCPProvider(unittest.TestCase):
         assert self.bucket == self.provider.bucket
 
     @mock.patch.object(GCPProvider, "_Provider__storage_client")
-    def test_that_raises_error_when_it_can_not_find_bucket(self, mock_storage):
-        mock_storage.side_effect = ValueError
+    def test_that_raises_error_when_it_can_not_find_bucket(self, mock_storage_client):
+        mock_storage_client.side_effect = exceptions.NotFound("")
 
+        # TODO: raise our own message instead of TypeError
         with self.assertRaises(ValueError):
-            self.provider.set_bucket("abcde")
+            self.provider.set_bucket(self.bucket)
             self.provider.request_upload(self.remote_file_path, self.local_file_path)
 
-        mock_storage.assert_called_once_with()
+        mock_storage_client.assert_called_once()
 
     @mock.patch.object(GCPProvider, "_Provider__upload")
     @mock.patch.object(GCPProvider, "_Provider__build_storage_response")
