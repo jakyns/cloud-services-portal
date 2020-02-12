@@ -4,7 +4,7 @@ import mock
 from api.storage.storage.gcp.response import Response as GCPResponse
 
 
-class TestGCPResponse(unittest.TestCase):
+class TestStorageStorageGCPResponse(unittest.TestCase):
     def setUp(self):
         self.response = GCPResponse(self.__mock_existing_file_object())
 
