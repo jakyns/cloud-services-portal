@@ -8,7 +8,7 @@ from api.storage.storage.gcp.request import Request as GCPRequest
 from lib.storage import errors as StorageError
 
 
-class TestGCPRequest(unittest.TestCase):
+class TestStorageStorageGCPRequest(unittest.TestCase):
     def setUp(self):
         self.request = GCPRequest("abcde")
 

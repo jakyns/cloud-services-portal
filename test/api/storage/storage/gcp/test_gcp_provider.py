@@ -8,7 +8,7 @@ from api.storage.storage.gcp.response import Response as GCPResponse
 from lib.storage import errors as StorageError
 
 
-class TestGCPProvider(unittest.TestCase):
+class TestStorageStorageGCPProvider(unittest.TestCase):
     def setUp(self):
         self.provider = GCPProvider()
 
