@@ -1,9 +1,8 @@
 import unittest
 import mock
 
-from google.cloud import exceptions
-
 from api.storage.storage.gcp.provider import Provider as GCPProvider
+from api.storage.storage.gcp.request import Request as GCPRequest
 from api.storage.storage.gcp.response import Response as GCPResponse
 
 from lib.storage import errors as StorageError
@@ -18,22 +17,26 @@ class TestGCPProvider(unittest.TestCase):
 
         assert self.bucket == self.provider.bucket
 
-    @mock.patch.object(GCPProvider, "_Provider__storage_client")
-    def test_that_raises_error_when_it_can_not_find_bucket(self, mock_storage_client):
-        mock_storage_client.side_effect = exceptions.NotFound("")
+    @mock.patch.object(GCPRequest, "upload")
+    def test_that_raises_bucket_not_found_when_bucket_is_not_existed(
+        self, mock_request
+    ):
+        mock_request.side_effect = StorageError.BucketNotFound("")
 
         with self.assertRaises(StorageError.BucketNotFound):
             self.provider.set_bucket(self.bucket)
             self.provider.request_upload(self.remote_file_path, self.local_file_path)
 
-        mock_storage_client.assert_called_once()
+        mock_request.assert_called_once()
 
-    @mock.patch.object(GCPProvider, "_Provider__upload")
+    @mock.patch.object(GCPRequest, "upload")
     @mock.patch.object(GCPProvider, "_Provider__build_storage_response")
-    def test_that_can_upload_file_to_gcp_bucket(self, mock_response, mock_upload):
+    def test_that_can_upload_file_to_gcp_bucket_and_parse_to_gcp_response(
+        self, mock_response, mock_request
+    ):
         mock_file_object = self.__mock_existing_file_object()
 
-        mock_upload.return_value = mock_file_object
+        mock_request.return_value = mock_file_object
         mock_response.return_value = GCPResponse(mock_file_object)
 
         self.provider.set_bucket(self.bucket)
@@ -41,37 +44,41 @@ class TestGCPProvider(unittest.TestCase):
             self.remote_file_path, self.local_file_path
         )
 
-        mock_upload.assert_called_once_with(self.remote_file_path, self.local_file_path)
+        mock_request.assert_called_once_with(
+            self.remote_file_path, self.local_file_path
+        )
         mock_response.assert_called_once_with(mock_file_object)
 
         self.assertEqual(1, response.get("id"))
         self.assertEqual("bucket-testing", response.get("bucket"))
         self.assertTrue(response.get("exists"))
 
-    @mock.patch.object(GCPProvider, "_Provider__blob_object")
-    def test_that_can_not_delete_file_from_gcp_bucket_when_file_is_not_existed(
-        self, mock_blob
+    @mock.patch.object(GCPRequest, "delete")
+    def test_that_raises_file_not_found_when_file_from_gcp_bucket_is_not_existed(
+        self, mock_request
     ):
-        mock_blob.return_value = self.__mock_deleting_file_object()
+        mock_request.side_effect = StorageError.FileNotFound("")
 
         with self.assertRaises(StorageError.FileNotFound):
             self.provider.set_bucket(self.bucket)
             self.provider.request_delete(self.remote_file_path)
 
-        mock_blob.assert_called_once()
+        mock_request.assert_called_once()
 
-    @mock.patch.object(GCPProvider, "_Provider__delete")
+    @mock.patch.object(GCPRequest, "delete")
     @mock.patch.object(GCPProvider, "_Provider__build_storage_response")
-    def test_that_can_delete_file_from_gcp_bucket(self, mock_response, mock_upload):
+    def test_that_can_delete_file_from_gcp_bucket_and_parse_to_gcp_response(
+        self, mock_response, mock_request
+    ):
         mock_file_object = self.__mock_deleting_file_object()
 
-        mock_upload.return_value = mock_file_object
+        mock_request.return_value = mock_file_object
         mock_response.return_value = GCPResponse(mock_file_object)
 
         self.provider.set_bucket(self.bucket)
         response = self.provider.request_delete(self.remote_file_path)
 
-        mock_upload.assert_called_once_with(self.remote_file_path)
+        mock_request.assert_called_once_with(self.remote_file_path)
         mock_response.assert_called_once_with(mock_file_object)
 
         self.assertEqual(None, response.get("id"))
