@@ -144,7 +144,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
         obj = mock.Mock()
         obj.id = 1
         obj.bucket = self.bucket()
-        obj.name = self.local_file_path()
+        obj.name = self.remote_file_path()
         obj.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket(), self.remote_file_path()
         )
@@ -156,7 +156,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
         obj = mock.Mock()
         obj.id = None
         obj.bucket = self.bucket()
-        obj.name = self.local_file_path()
+        obj.name = self.remote_file_path()
         obj.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket(), self.remote_file_path()
         )

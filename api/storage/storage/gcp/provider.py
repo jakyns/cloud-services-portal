@@ -24,6 +24,7 @@ class Provider(BaseProvider):
             "bucket": response.bucket(),
             "name": response.name(),
             "public_url": response.public_url(),
+            "uri": response.uri(),
             "exists": response.exists(),
         }
 
@@ -38,6 +39,7 @@ class Provider(BaseProvider):
             "bucket": response.bucket(),
             "name": response.name(),
             "public_url": response.public_url(),
+            "uri": response.uri(),
             "exists": response.exists(),
         }
 
@@ -52,6 +54,7 @@ class Provider(BaseProvider):
             "bucket": response.bucket(),
             "name": response.name(),
             "public_url": response.public_url(),
+            "uri": response.uri(),
             "exists": response.exists(),
         }
 
