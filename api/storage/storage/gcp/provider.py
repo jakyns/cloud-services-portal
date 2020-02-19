@@ -13,6 +13,20 @@ class Provider(BaseProvider):
     def get_bucket(self) -> str:
         return self.bucket
 
+    def request_retrieve(self, remote_file_path) -> dict:
+        request = GCPRequest(self.bucket)
+        retrieve_response = request.retrieve(remote_file_path)
+
+        response = self.__build_storage_response(retrieve_response)
+
+        return {
+            "id": response.id(),
+            "bucket": response.bucket(),
+            "name": response.name(),
+            "public_url": response.public_url(),
+            "exists": response.exists(),
+        }
+
     def request_upload(self, remote_file_path, local_file_path) -> dict:
         request = GCPRequest(self.bucket)
         upload_response = request.upload(remote_file_path, local_file_path)

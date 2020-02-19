@@ -1,3 +1,5 @@
+from lib.storage import errors as StorageError
+
 from api.storage.storage.gcp.provider import Provider as GCPProvider
 
 
@@ -11,6 +13,9 @@ class StorageService(object):
     def set_bucket(self, bucket) -> None:
         return self.provider.set_bucket(bucket)
 
+    def request_retrieve(self, remote_file_path) -> dict:
+        return self.provider.request_retrieve(remote_file_path)
+
     def request_upload(self, remote_file_path, local_file_path) -> dict:
         return self.provider.request_upload(remote_file_path, local_file_path)
 
@@ -23,7 +28,9 @@ class StorageService(object):
         provider = self.__available_providers().get(identifier.lower(), None)
 
         if not provider:
-            raise ValueError(f"provider {identifier} is not available")
+            raise StorageError.ProviderNotFound(
+                f"provider {identifier} is not available"
+            )
 
         return provider
 
