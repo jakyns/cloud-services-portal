@@ -6,7 +6,7 @@ from api.storage.storage.gcp.response import Response as GCPResponse
 
 class TestStorageStorageGCPResponse(unittest.TestCase):
     def setUp(self):
-        self.response = GCPResponse(self.__mock_existing_file_object())
+        self.response = GCPResponse(self.__mock_existed_file_object())
 
     def test_that_returns_id_as_integer(self):
         self.assertEqual(1, self.response.id())
@@ -26,8 +26,8 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
     def test_that_returns_file_exists_true_if_file_is_existed(self):
         self.assertTrue(self.response.exists())
 
-    def test_that_returns_file_existing_false_if_file_is_not_existed(self):
-        file_obj = self.__mock_existing_file_object()
+    def test_that_returns_file_exists_false_if_file_is_not_existed(self):
+        file_obj = self.__mock_existed_file_object()
         file_obj.exists = lambda: False
 
         response = GCPResponse(file_obj)
@@ -38,7 +38,10 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
 
     @staticmethod
     def bucket():
-        return "bucket-testing"
+        class Bucket(object):
+            name = "bucket-testing"
+
+        return Bucket
 
     @staticmethod
     def remote_file_path():
@@ -50,13 +53,13 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
 
     # private
 
-    def __mock_existing_file_object(self):
+    def __mock_existed_file_object(self):
         obj = mock.Mock()
         obj.id = 1
         obj.bucket = self.bucket()
         obj.name = self.local_file_path()
         obj.public_url = "https://storage.googleapis.com/{}/{}".format(
-            self.bucket(), self.remote_file_path()
+            self.bucket().name, self.remote_file_path()
         )
         obj.exists = lambda: True
 

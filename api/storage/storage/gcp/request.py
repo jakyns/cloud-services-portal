@@ -10,6 +10,12 @@ class Request(BaseRequest):
     def __init__(self, bucket):
         self.bucket = bucket
 
+    def retrieve(self, remote_file_path) -> storage.blob.Blob:
+        blob = self.__blob_object(remote_file_path)
+        retrieve_obj = self.__retrieve_from_storage(blob, remote_file_path)
+
+        return retrieve_obj
+
     def upload(self, remote_file_path, local_file_path) -> storage.blob.Blob:
         blob = self.__blob_object(remote_file_path)
         upload_obj = self.__upload_to_storage(blob, local_file_path)
@@ -36,13 +42,27 @@ class Request(BaseRequest):
         except exceptions.NotFound as e:
             raise StorageError.BucketNotFound(e.message)
 
+    def __check_existing(self, blob):
+        if not blob.exists():
+            raise StorageError.FileNotFound(
+                f"{blob.name} object is not existed in GCP storage"
+            )
+
+    def __retrieve_from_storage(self, blob, remote_file_path) -> storage.blob.Blob:
+        self.__check_existing(blob)
+
+        return blob
+
     def __upload_to_storage(self, blob, local_file_path) -> storage.blob.Blob:
-        return blob.upload_from_filename(local_file_path)
+        try:
+            blob.upload_from_filename(local_file_path)
+        except FileNotFoundError:
+            raise StorageError.FileNotFound("uploading file not found")
+
+        return blob
 
     def __delete_from_storage(self, blob) -> storage.blob.Blob:
-        if not blob.exists():
-            raise StorageError.FileNotFound
-
+        self.__check_existing(blob)
         blob.delete()
 
         return blob

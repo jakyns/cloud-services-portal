@@ -9,7 +9,7 @@ class Response(Response):
         return self.response.id
 
     def bucket(self) -> str:
-        return self.response.bucket
+        return self.response.bucket.name
 
     def name(self) -> str:
         return self.response.name

@@ -4,8 +4,14 @@ class Provider(object):
     def set_bucket(self, bucket) -> None:
         self.bucket = bucket
 
-    def request_upload(self, file_uri, file_path) -> object:
+    def get_bucket(self, bucket) -> str:
+        return self.bucket
+
+    def request_retrieve(self, remote_file_path) -> dict:
         raise NotImplementedError
 
-    def request_delete(self, file_uri) -> bool:
+    def request_upload(self, remote_file_path, local_file_path) -> dict:
+        raise NotImplementedError
+
+    def request_delete(self, remote_file_path) -> dict:
         raise NotImplementedError

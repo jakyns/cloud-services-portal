@@ -1,33 +1,39 @@
 import unittest
 import mock
 
-from services.storage import StorageService
+from lib.storage import errors as StorageError
 
 from api.storage.storage.gcp.provider import Provider as GCPProvider
 
+from services.storage import StorageService
 
-class TestStorageService(unittest.TestCase):
+
+class TestServiceStorageService(unittest.TestCase):
     def setUp(self):
         self.service = StorageService("GCP")
 
     def test_that_raises_error_when_initialize_provider_which_is_not_available(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(StorageError.ProviderNotFound):
             StorageService("abcde")
 
     def test_that_can_initiate_provider(self):
         self.assertIsInstance(self.service, StorageService)
         self.assertIsInstance(self.service.provider, GCPProvider)
 
-    def test_that_can_get_bucket(self):
-        self.service.set_bucket("bucket-testing")
-        self.assertEqual("bucket-testing", self.service.get_bucket())
-
-    def test_that_can_set_bucket(self):
+    def test_that_can_set_and_get_bucket(self):
         self.service.set_bucket("bucket-testing")
         self.assertEqual("bucket-testing", self.service.get_bucket())
 
         self.service.set_bucket("bucket-testing2")
         self.assertEqual("bucket-testing2", self.service.get_bucket())
+
+    @mock.patch.object(GCPProvider, "request_retrieve")
+    def test_that_can_request_retrieve(self, mock_upload):
+        mock_upload.return_value = self.__mock_file_object()
+
+        self.service.request_retrieve(self.remote_file_path)
+
+        mock_upload.assert_called_once_with(self.remote_file_path)
 
     @mock.patch.object(GCPProvider, "request_upload")
     def test_that_can_request_upload(self, mock_upload):
@@ -49,7 +55,10 @@ class TestStorageService(unittest.TestCase):
 
     @staticmethod
     def bucket():
-        return "bucket-testing"
+        class Bucket(object):
+            name = "bucket-testing"
+
+        return Bucket
 
     @staticmethod
     def remote_file_path():
