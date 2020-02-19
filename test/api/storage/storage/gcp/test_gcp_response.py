@@ -15,13 +15,16 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
         self.assertEqual("bucket-testing", self.response.bucket())
 
     def test_that_returns_file_name_as_string(self):
-        self.assertEqual("test.txt", self.response.name())
+        self.assertEqual("ex1/test.txt", self.response.name())
 
     def test_that_returns_file_public_url_as_string(self):
         self.assertEqual(
             "https://storage.googleapis.com/bucket-testing/ex1/test.txt",
             self.response.public_url(),
         )
+
+    def test_that_returns_file_uri_as_string(self):
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", self.response.uri())
 
     def test_that_returns_file_exists_true_if_file_is_existed(self):
         self.assertTrue(self.response.exists())
@@ -57,7 +60,7 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
         obj = mock.Mock()
         obj.id = 1
         obj.bucket = self.bucket()
-        obj.name = self.local_file_path()
+        obj.name = self.remote_file_path()
         obj.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket().name, self.remote_file_path()
         )

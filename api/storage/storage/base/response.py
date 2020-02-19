@@ -11,6 +11,9 @@ class Response(object):
     def name(self) -> str:
         raise NotImplementedError
 
+    def uri(self) -> str:
+        raise NotImplementedError
+
     def public_url(self) -> str:
         raise NotImplementedError
 

@@ -52,6 +52,7 @@ class TestStorageStorageGCPProvider(unittest.TestCase):
 
         self.assertEqual(1, response.get("id"))
         self.assertEqual("bucket-testing", response.get("bucket"))
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", response.get("uri"))
         self.assertTrue(response.get("exists"))
 
     @mock.patch.object(GCPRequest, "delete")
@@ -84,6 +85,7 @@ class TestStorageStorageGCPProvider(unittest.TestCase):
 
         self.assertEqual(None, response.get("id"))
         self.assertEqual("bucket-testing", response.get("bucket"))
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", response.get("uri"))
         self.assertFalse(response.get("exists"))
 
     @mock.patch.object(GCPRequest, "retrieve")
@@ -114,6 +116,7 @@ class TestStorageStorageGCPProvider(unittest.TestCase):
 
         self.assertEqual(1, response.get("id"))
         self.assertEqual("bucket-testing", response.get("bucket"))
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", response.get("uri"))
         self.assertTrue(response.get("exists"))
 
     # static
@@ -139,7 +142,7 @@ class TestStorageStorageGCPProvider(unittest.TestCase):
         obj = mock.Mock()
         obj.id = 1
         obj.bucket = self.bucket()
-        obj.name = self.local_file_path()
+        obj.name = self.remote_file_path()
         obj.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket(), self.remote_file_path()
         )
@@ -151,7 +154,7 @@ class TestStorageStorageGCPProvider(unittest.TestCase):
         obj = mock.Mock()
         obj.id = None
         obj.bucket = self.bucket()
-        obj.name = self.local_file_path()
+        obj.name = self.remote_file_path()
         obj.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket(), self.remote_file_path()
         )

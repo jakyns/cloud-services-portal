@@ -17,5 +17,8 @@ class Response(Response):
     def public_url(self) -> str:
         return self.response.public_url
 
+    def uri(self) -> str:
+        return f"gs://{self.bucket()}/{self.name()}"
+
     def exists(self) -> bool:
         return self.response.exists()
