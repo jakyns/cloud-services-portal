@@ -37,6 +37,19 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
 
         self.assertFalse(response.exists())
 
+    def test_that_can_serialize_to_dict(self):
+        serialize = self.response.serialize()
+
+        self.assertEqual(1, serialize.get("id"))
+        self.assertEqual("bucket-testing", serialize.get("bucket"))
+        self.assertEqual("ex1/test.txt", serialize.get("name"))
+        self.assertEqual(
+            "https://storage.googleapis.com/bucket-testing/ex1/test.txt",
+            serialize.get("public_url"),
+        )
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", serialize.get("uri"))
+        self.assertTrue(serialize.get("exists"))
+
     # static
 
     @staticmethod
