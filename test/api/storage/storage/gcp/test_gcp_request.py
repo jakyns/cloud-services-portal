@@ -13,7 +13,9 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
         self.request = GCPRequest("abcde")
 
     @mock.patch.object(GCPRequest, "_Request__storage_client")
-    def test_that_raises_error_when_it_can_not_find_bucket(self, mock_storage_client):
+    def test_that_raises_error_when_it_can_not_find_bucket(
+        self, mock_storage_client: mock.MagicMock
+    ):
         mock_storage_client.side_effect = exceptions.NotFound("")
 
         with self.assertRaises(StorageError.BucketNotFound):
@@ -24,7 +26,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
     @mock.patch.object(GCPRequest, "_Request__blob_object")
     @mock.patch.object(GCPRequest, "_Request__upload_to_storage")
     def test_that_raises_uploading_file_not_found_when_local_file_is_not_existed(
-        self, mock_upload, mock_blob
+        self, mock_upload: mock.MagicMock, mock_blob: mock.MagicMock
     ):
         mock_blob_object = self.__mock_blob_object()
 
@@ -39,7 +41,9 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
     @mock.patch.object(GCPRequest, "_Request__blob_object")
     @mock.patch.object(GCPRequest, "_Request__upload_to_storage")
-    def test_that_can_upload_file_to_bucket(self, mock_upload, mock_blob):
+    def test_that_can_upload_file_to_bucket(
+        self, mock_upload: mock.MagicMock, mock_blob: mock.MagicMock
+    ):
         mock_blob_object = self.__mock_blob_object()
         mock_file_object = self.__mock_existed_file_object()
 
@@ -57,7 +61,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
     @mock.patch.object(GCPRequest, "_Request__blob_object")
     def test_that_can_not_delete_file_from_bucket_when_file_is_not_existed(
-        self, mock_blob
+        self, mock_blob: mock.MagicMock
     ):
         mock_blob.return_value = self.__mock_deleted_file_object()
 
@@ -68,7 +72,9 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
     @mock.patch.object(GCPRequest, "_Request__blob_object")
     @mock.patch.object(GCPRequest, "_Request__delete_from_storage")
-    def test_that_can_delete_file_from_bucket(self, mock_delete, mock_blob):
+    def test_that_can_delete_file_from_bucket(
+        self, mock_delete: mock.MagicMock, mock_blob: mock.MagicMock
+    ):
         mock_blob_object = self.__mock_blob_object()
         mock_file_object = self.__mock_deleted_file_object()
 
@@ -86,7 +92,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
     @mock.patch.object(GCPRequest, "_Request__blob_object")
     def test_that_can_not_retrieve_file_object_from_bucket_when_file_is_not_existed(
-        self, mock_blob
+        self, mock_blob: mock.MagicMock
     ):
         mock_blob.return_value = self.__mock_deleted_file_object()
 
@@ -97,7 +103,9 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
     @mock.patch.object(GCPRequest, "_Request__blob_object")
     @mock.patch.object(GCPRequest, "_Request__retrieve_from_storage")
-    def test_that_can_retrieve_file_object_from_bucket(self, mock_retrieve, mock_blob):
+    def test_that_can_retrieve_file_object_from_bucket(
+        self, mock_retrieve: mock.MagicMock, mock_blob: mock.MagicMock
+    ):
         mock_blob_object = self.__mock_blob_object()
         mock_file_object = self.__mock_existed_file_object()
 

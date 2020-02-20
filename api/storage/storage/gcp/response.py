@@ -1,7 +1,7 @@
-from api.storage.storage.base.response import Response
+from api.storage.storage.base.response import Response as BaseResponse
 
 
-class Response(Response):
+class Response(BaseResponse):
     def __init__(self, response):
         self.response = response
 
@@ -22,3 +22,13 @@ class Response(Response):
 
     def exists(self) -> bool:
         return self.response.exists()
+
+    def serialize(self) -> dict:
+        return {
+            "id": self.id(),
+            "bucket": self.bucket(),
+            "name": self.name(),
+            "public_url": self.public_url(),
+            "uri": self.uri(),
+            "exists": self.exists(),
+        }

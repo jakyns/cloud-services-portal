@@ -28,25 +28,52 @@ class TestServiceStorageService(unittest.TestCase):
         self.assertEqual("bucket-testing2", self.service.get_bucket())
 
     @mock.patch.object(GCPProvider, "request_retrieve")
-    def test_that_can_request_retrieve(self, mock_upload):
-        mock_upload.return_value = self.__mock_file_object()
+    def test_that_raises_bucket_not_found_when_it_can_not_find_bucket(
+        self, mock_retrieve: mock.MagicMock
+    ):
+        mock_retrieve.side_effect = StorageError.BucketNotFound
 
+        with self.assertRaises(StorageError.BucketNotFound):
+            self.service.set_bucket("abcde")
+            self.service.request_retrieve(self.remote_file_path)
+
+        mock_retrieve.assert_called_once_with(self.remote_file_path)
+
+    @mock.patch.object(GCPProvider, "request_retrieve")
+    def test_that_raises_file_not_found_when_it_can_not_find_object_in_storage(
+        self, mock_retrieve: mock.MagicMock
+    ):
+        mock_retrieve.side_effect = StorageError.FileNotFound
+
+        with self.assertRaises(StorageError.FileNotFound):
+            self.service.set_bucket("bucket-testing")
+            self.service.request_retrieve(self.remote_file_path)
+
+        mock_retrieve.assert_called_once_with(self.remote_file_path)
+
+    @mock.patch.object(GCPProvider, "request_retrieve")
+    def test_that_can_request_retrieve(self, mock_retrieve: mock.MagicMock):
+        mock_retrieve.return_value = self.__mock_file_object()
+
+        self.service.set_bucket("bucket-testing")
         self.service.request_retrieve(self.remote_file_path)
 
-        mock_upload.assert_called_once_with(self.remote_file_path)
+        mock_retrieve.assert_called_once_with(self.remote_file_path)
 
     @mock.patch.object(GCPProvider, "request_upload")
-    def test_that_can_request_upload(self, mock_upload):
+    def test_that_can_request_upload(self, mock_upload: mock.MagicMock):
         mock_upload.return_value = self.__mock_file_object()
 
+        self.service.set_bucket("bucket-testing")
         self.service.request_upload(self.remote_file_path, self.local_file_path)
 
         mock_upload.assert_called_once_with(self.remote_file_path, self.local_file_path)
 
     @mock.patch.object(GCPProvider, "request_delete")
-    def test_that_can_request_delete(self, mock_delete):
+    def test_that_can_request_delete(self, mock_delete: mock.MagicMock):
         mock_delete.return_value = self.__mock_file_object()
 
+        self.service.set_bucket("bucket-testing")
         self.service.request_delete(self.remote_file_path)
 
         mock_delete.assert_called_once_with(self.remote_file_path)

@@ -19,3 +19,6 @@ class Response(object):
 
     def exists(self) -> bool:
         raise NotImplementedError
+
+    def serialize(self) -> dict:
+        raise NotImplementedError
