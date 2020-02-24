@@ -12,6 +12,7 @@ nose2 = "==0.9.1"
 mock = "==3.0.5"
 flake8 = "==3.7.9"
 google-cloud-storage = "==1.25.0"
+google-cloud-vision = "==0.42.0"
 
 [requires]
 python_version = "3.7.3"
