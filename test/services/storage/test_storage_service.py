@@ -81,23 +81,23 @@ class TestServiceStorageService(unittest.TestCase):
     # static
 
     @staticmethod
-    def bucket():
+    def bucket() -> object:
         class Bucket(object):
             name = "bucket-testing"
 
         return Bucket
 
     @staticmethod
-    def remote_file_path():
+    def remote_file_path() -> str:
         return "ex1/test.txt"
 
     @staticmethod
-    def local_file_path():
+    def local_file_path() -> str:
         return "test.txt"
 
     # private
 
-    def __mock_file_object(self):
+    def __mock_file_object(self) -> mock.MagicMock:
         obj = mock.Mock()
         obj.id = 1
         obj.bucket = self.bucket()

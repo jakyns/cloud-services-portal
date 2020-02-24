@@ -124,23 +124,23 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
     # static
 
     @staticmethod
-    def bucket():
+    def bucket() -> object:
         class Bucket(object):
             name = "bucket-testing"
 
         return Bucket
 
     @staticmethod
-    def remote_file_path():
+    def remote_file_path() -> str:
         return "ex1/test.txt"
 
     @staticmethod
-    def local_file_path():
+    def local_file_path() -> str:
         return "test.txt"
 
     # private
 
-    def __mock_blob_object(self):
+    def __mock_blob_object(self) -> mock.MagicMock:
         obj = mock.Mock()
         obj.upload_from_filename = lambda local_file_path: "uploading"
         obj.delete = lambda: "deleting"
@@ -148,7 +148,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
         return obj
 
-    def __mock_existed_file_object(self):
+    def __mock_existed_file_object(self) -> mock.MagicMock:
         obj = mock.Mock()
         obj.id = 1
         obj.bucket = self.bucket()
@@ -160,7 +160,7 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
 
         return obj
 
-    def __mock_deleted_file_object(self):
+    def __mock_deleted_file_object(self) -> mock.MagicMock:
         obj = mock.Mock()
         obj.id = None
         obj.bucket = self.bucket()
