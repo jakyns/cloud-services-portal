@@ -30,10 +30,9 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
         self.assertTrue(self.response.exists())
 
     def test_that_returns_file_exists_false_if_file_is_not_existed(self):
-        file_obj = self.__mock_existed_file_object()
-        file_obj.exists = lambda: False
+        self.response.exists = lambda: False
 
-        response = GCPResponse(file_obj)
+        response = GCPResponse(self.response)
 
         self.assertFalse(response.exists())
 

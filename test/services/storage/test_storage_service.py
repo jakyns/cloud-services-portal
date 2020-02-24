@@ -52,31 +52,65 @@ class TestServiceStorageService(unittest.TestCase):
         mock_retrieve.assert_called_once_with(self.remote_file_path)
 
     @mock.patch.object(GCPProvider, "request_retrieve")
-    def test_that_can_request_retrieve(self, mock_retrieve: mock.MagicMock):
-        mock_retrieve.return_value = self.__mock_file_object()
+    def test_that_can_request_retrieve(self, mock_response: mock.MagicMock):
+        mock_response.return_value = self.__mock_existed_file_storage_response()
 
         self.service.set_bucket("bucket-testing")
-        self.service.request_retrieve(self.remote_file_path)
+        response = self.service.request_retrieve(self.remote_file_path)
 
-        mock_retrieve.assert_called_once_with(self.remote_file_path)
+        mock_response.assert_called_once_with(self.remote_file_path)
+
+        self.assertEqual(1, response.get("id"))
+        self.assertEqual("bucket-testing", response.get("bucket"))
+        self.assertEqual("test.txt", response.get("name"))
+        self.assertEqual(
+            "https://storage.googleapis.com/bucket-testing/ex1/test.txt",
+            response.get("public_url"),
+        )
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", response.get("uri"))
+        self.assertTrue(response.get("exists"))
 
     @mock.patch.object(GCPProvider, "request_upload")
-    def test_that_can_request_upload(self, mock_upload: mock.MagicMock):
-        mock_upload.return_value = self.__mock_file_object()
+    def test_that_can_request_upload(self, mock_response: mock.MagicMock):
+        mock_response.return_value = self.__mock_existed_file_storage_response()
 
         self.service.set_bucket("bucket-testing")
-        self.service.request_upload(self.remote_file_path, self.local_file_path)
+        response = self.service.request_upload(
+            self.remote_file_path, self.local_file_path
+        )
 
-        mock_upload.assert_called_once_with(self.remote_file_path, self.local_file_path)
+        mock_response.assert_called_once_with(
+            self.remote_file_path, self.local_file_path
+        )
+
+        self.assertEqual(1, response.get("id"))
+        self.assertEqual("bucket-testing", response.get("bucket"))
+        self.assertEqual("test.txt", response.get("name"))
+        self.assertEqual(
+            "https://storage.googleapis.com/bucket-testing/ex1/test.txt",
+            response.get("public_url"),
+        )
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", response.get("uri"))
+        self.assertTrue(response.get("exists"))
 
     @mock.patch.object(GCPProvider, "request_delete")
-    def test_that_can_request_delete(self, mock_delete: mock.MagicMock):
-        mock_delete.return_value = self.__mock_file_object()
+    def test_that_can_request_delete(self, mock_response: mock.MagicMock):
+        mock_response.return_value = self.__mock_deleted_file_storage_response()
 
         self.service.set_bucket("bucket-testing")
-        self.service.request_delete(self.remote_file_path)
+        response = self.service.request_delete(self.remote_file_path)
 
-        mock_delete.assert_called_once_with(self.remote_file_path)
+        mock_response.assert_called_once_with(self.remote_file_path)
+
+        self.assertEqual(None, response.get("id"))
+        self.assertEqual("bucket-testing", response.get("bucket"))
+        self.assertEqual("test.txt", response.get("name"))
+        self.assertEqual(
+            "https://storage.googleapis.com/bucket-testing/ex1/test.txt",
+            response.get("public_url"),
+        )
+        self.assertEqual("gs://bucket-testing/ex1/test.txt", response.get("uri"))
+        self.assertFalse(response.get("exists"))
 
     # static
 
@@ -97,14 +131,26 @@ class TestServiceStorageService(unittest.TestCase):
 
     # private
 
-    def __mock_file_object(self) -> mock.MagicMock:
-        obj = mock.Mock()
-        obj.id = 1
-        obj.bucket = self.bucket()
-        obj.name = self.local_file_path()
-        obj.public_url = "https://storage.googleapis.com/{}/{}".format(
-            self.bucket(), self.remote_file_path()
-        )
-        obj.exists = lambda: True
+    def __mock_existed_file_storage_response(self) -> dict:
+        return {
+            "id": 1,
+            "bucket": self.bucket().name,
+            "name": "test.txt",
+            "public_url": "https://storage.googleapis.com/{}/{}".format(
+                self.bucket().name, self.remote_file_path()
+            ),
+            "uri": "gs://{}/{}".format(self.bucket().name, self.remote_file_path()),
+            "exists": True,
+        }
 
-        return obj
+    def __mock_deleted_file_storage_response(self) -> dict:
+        return {
+            "id": None,
+            "bucket": self.bucket().name,
+            "name": "test.txt",
+            "public_url": "https://storage.googleapis.com/{}/{}".format(
+                self.bucket().name, self.remote_file_path()
+            ),
+            "uri": "gs://{}/{}".format(self.bucket().name, self.remote_file_path()),
+            "exists": False,
+        }

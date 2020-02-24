@@ -24,6 +24,37 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
         mock_storage_client.assert_called_once()
 
     @mock.patch.object(GCPRequest, "_Request__blob_object")
+    def test_that_can_not_retrieve_file_object_from_bucket_when_file_is_not_existed(
+        self, mock_blob: mock.MagicMock
+    ):
+        mock_blob.return_value = self.__mock_deleted_file_object()
+
+        with self.assertRaises(StorageError.FileNotFound):
+            self.request.retrieve(self.remote_file_path)
+
+        mock_blob.assert_called_once_with(self.remote_file_path)
+
+    @mock.patch.object(GCPRequest, "_Request__blob_object")
+    @mock.patch.object(GCPRequest, "_Request__retrieve_from_storage")
+    def test_that_can_retrieve_file_object_from_bucket(
+        self, mock_retrieve: mock.MagicMock, mock_blob: mock.MagicMock
+    ):
+        mock_blob_object = self.__mock_blob_object()
+        mock_file_object = self.__mock_existed_file_object()
+
+        mock_blob.return_value = mock_blob_object
+        mock_retrieve.return_value = mock_file_object
+
+        response = self.request.retrieve(self.remote_file_path)
+
+        mock_blob.assert_called_once_with(self.remote_file_path)
+        mock_retrieve.assert_called_once()
+
+        self.assertEqual(1, response.id)
+        self.assertEqual("bucket-testing", response.bucket.name)
+        self.assertTrue(response.exists())
+
+    @mock.patch.object(GCPRequest, "_Request__blob_object")
     @mock.patch.object(GCPRequest, "_Request__upload_to_storage")
     def test_that_raises_uploading_file_not_found_when_local_file_is_not_existed(
         self, mock_upload: mock.MagicMock, mock_blob: mock.MagicMock
@@ -89,37 +120,6 @@ class TestStorageStorageGCPRequest(unittest.TestCase):
         self.assertEqual(None, response.id)
         self.assertEqual("bucket-testing", response.bucket.name)
         self.assertFalse(response.exists())
-
-    @mock.patch.object(GCPRequest, "_Request__blob_object")
-    def test_that_can_not_retrieve_file_object_from_bucket_when_file_is_not_existed(
-        self, mock_blob: mock.MagicMock
-    ):
-        mock_blob.return_value = self.__mock_deleted_file_object()
-
-        with self.assertRaises(StorageError.FileNotFound):
-            self.request.retrieve(self.remote_file_path)
-
-        mock_blob.assert_called_once_with(self.remote_file_path)
-
-    @mock.patch.object(GCPRequest, "_Request__blob_object")
-    @mock.patch.object(GCPRequest, "_Request__retrieve_from_storage")
-    def test_that_can_retrieve_file_object_from_bucket(
-        self, mock_retrieve: mock.MagicMock, mock_blob: mock.MagicMock
-    ):
-        mock_blob_object = self.__mock_blob_object()
-        mock_file_object = self.__mock_existed_file_object()
-
-        mock_blob.return_value = mock_blob_object
-        mock_retrieve.return_value = mock_file_object
-
-        response = self.request.retrieve(self.remote_file_path)
-
-        mock_blob.assert_called_once_with(self.remote_file_path)
-        mock_retrieve.assert_called_once()
-
-        self.assertEqual(1, response.id)
-        self.assertEqual("bucket-testing", response.bucket.name)
-        self.assertTrue(response.exists())
 
     # static
 

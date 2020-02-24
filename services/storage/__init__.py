@@ -39,7 +39,7 @@ class StorageService(object):
 
     # private
 
-    def __from_identifier(self, identifier: str):
+    def __from_identifier(self, identifier: str) -> GCPProvider:
         provider = self.__available_providers().get(identifier.lower(), None)
 
         if not provider:
@@ -49,5 +49,5 @@ class StorageService(object):
 
         return provider
 
-    def __available_providers(self):
+    def __available_providers(self) -> dict:
         return {"gcp": GCPProvider}
