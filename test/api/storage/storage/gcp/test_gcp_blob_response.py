@@ -1,12 +1,12 @@
 import unittest
 import mock
 
-from api.storage.storage.gcp.response import Response as GCPResponse
+from api.storage.storage.gcp.blob_response import BlobResponse
 
 
-class TestStorageStorageGCPResponse(unittest.TestCase):
+class TestStorageStorageGCPBlobResponse(unittest.TestCase):
     def setUp(self):
-        self.response = GCPResponse(self.__mock_existed_file_object())
+        self.response = BlobResponse(self.__mock_blob_object())
 
     def test_that_returns_id_as_integer(self):
         self.assertEqual(1, self.response.id())
@@ -30,9 +30,7 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
         self.assertTrue(self.response.exists())
 
     def test_that_returns_file_exists_false_if_file_is_not_existed(self):
-        self.response.exists = lambda: False
-
-        response = GCPResponse(self.response)
+        response = BlobResponse(self.__mock_deleted_blob_object())
 
         self.assertFalse(response.exists())
 
@@ -62,20 +60,28 @@ class TestStorageStorageGCPResponse(unittest.TestCase):
     def remote_file_path() -> str:
         return "ex1/test.txt"
 
-    @staticmethod
-    def local_file_path() -> str:
-        return "test.txt"
-
     # private
 
-    def __mock_existed_file_object(self) -> mock.MagicMock:
-        obj = mock.Mock()
-        obj.id = 1
-        obj.bucket = self.bucket()
-        obj.name = self.remote_file_path()
-        obj.public_url = "https://storage.googleapis.com/{}/{}".format(
+    def __mock_blob_object(self) -> object:
+        blob = mock.Mock()
+        blob.object.id = 1
+        blob.object.bucket = self.bucket()
+        blob.object.name = self.remote_file_path()
+        blob.object.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket().name, self.remote_file_path()
         )
-        obj.exists = lambda: True
+        blob.object.exists = lambda: True
 
-        return obj
+        return blob
+
+    def __mock_deleted_blob_object(self) -> object:
+        blob = mock.Mock()
+        blob.object.id = None
+        blob.object.bucket = self.bucket()
+        blob.object.name = self.remote_file_path()
+        blob.object.public_url = "https://storage.googleapis.com/{}/{}".format(
+            self.bucket().name, self.remote_file_path()
+        )
+        blob.object.exists = lambda: False
+
+        return blob

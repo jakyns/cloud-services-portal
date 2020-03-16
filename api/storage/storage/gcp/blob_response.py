@@ -1,9 +1,9 @@
-from api.storage.storage.base.response import Response as BaseResponse
+from api.storage.storage.gcp.blob_request import BlobRequest
 
 
-class Response(BaseResponse):
-    def __init__(self, response):
-        self.response = response
+class BlobResponse(object):
+    def __init__(self, response: BlobRequest):
+        self.response = response.object
 
     def id(self) -> int:
         return self.response.id
