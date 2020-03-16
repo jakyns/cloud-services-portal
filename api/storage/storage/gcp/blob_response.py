@@ -3,7 +3,7 @@ from api.storage.storage.gcp.blob_request import BlobRequest
 
 class BlobResponse(object):
     def __init__(self, response: BlobRequest):
-        self.response = response.object
+        self.response = response.blob
 
     def id(self) -> int:
         return self.response.id
