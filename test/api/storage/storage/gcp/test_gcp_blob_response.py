@@ -64,24 +64,24 @@ class TestStorageStorageGCPBlobResponse(unittest.TestCase):
 
     def __mock_blob_object(self) -> object:
         blob = mock.Mock()
-        blob.object.id = 1
-        blob.object.bucket = self.bucket()
-        blob.object.name = self.remote_file_path()
-        blob.object.public_url = "https://storage.googleapis.com/{}/{}".format(
+        blob.blob.id = 1
+        blob.blob.bucket = self.bucket()
+        blob.blob.name = self.remote_file_path()
+        blob.blob.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket().name, self.remote_file_path()
         )
-        blob.object.exists = lambda: True
+        blob.blob.exists = lambda: True
 
         return blob
 
     def __mock_deleted_blob_object(self) -> object:
         blob = mock.Mock()
-        blob.object.id = None
-        blob.object.bucket = self.bucket()
-        blob.object.name = self.remote_file_path()
-        blob.object.public_url = "https://storage.googleapis.com/{}/{}".format(
+        blob.blob.id = None
+        blob.blob.bucket = self.bucket()
+        blob.blob.name = self.remote_file_path()
+        blob.blob.public_url = "https://storage.googleapis.com/{}/{}".format(
             self.bucket().name, self.remote_file_path()
         )
-        blob.object.exists = lambda: False
+        blob.blob.exists = lambda: False
 
         return blob
