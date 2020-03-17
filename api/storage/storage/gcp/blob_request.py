@@ -15,7 +15,7 @@ class BlobRequest(object):
         except FileNotFoundError:
             raise StorageError.FileNotFound("uploading file not found")
 
-    def delete(self, remote_file_path: str) -> bool:
+    def delete(self) -> bool:
         try:
             self.blob.delete()
             return True
