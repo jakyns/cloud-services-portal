@@ -1,5 +1,8 @@
 # Cloud Services Portal
 
+Repository that try to gather several frequently used services from each 
+cloud providers and make it simpler.
+
 ## Dependencies
 
 - Python 3.7.x or higher
@@ -32,9 +35,8 @@ export GOOGLE_APPLICATION_CREDENTIALS=
 
 ### Storage
 
-Initialize cloud provider:
-
-eg.
+available for
+- GCP Storage
 
 ```sh
 >>> from services.storage import StorageService
@@ -60,3 +62,8 @@ Delete
 ```sh
 >>> service.request_delete("remote_path/file.txt")
 ```
+
+### Vision
+
+available for
+- GCP Vision API
